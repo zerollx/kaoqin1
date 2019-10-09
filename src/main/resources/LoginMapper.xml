@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jc.mapper.LoginMapper">
+    <resultMap id="loginMap" type="com.jc.entity.Login">
+        <id property="id" column="id"></id>
+        <result property="userName" column="user_name"/>
+        <result property="password" column="password"/>
+        <result property="identity" column="identity"/>
+    </resultMap>
+    <select id="findByUserNameAndPwd" resultMap="loginMap">
+             select <include refid="all"/>from t_login where user_name= #{userName} and password= #{password} and identity = #{identity}
+    </select>
+    <sql id="all">
+        id,
+        user_name,
+        password,
+        identity
+    </sql>
+</mapper>

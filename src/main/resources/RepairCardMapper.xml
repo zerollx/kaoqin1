@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jc.mapper.RepairCardMapper">
+    <resultMap id="RepairMap" type="com.jc.entity.RepairCard">
+        <id column="id" property="id"/>
+        <result property="repairPeople" column="repair_people"/>
+        <result property="repairDate" column="repair_Date"/>
+        <result property="repairReason" column="repair_reason"/>
+    </resultMap>
+
+    <select id="listAll" resultMap="RepairMap">
+        select
+        <include refid="all"/>
+        from t_repair_card
+        <if test="username!=null and username!='' ">
+            <where>
+                repair_people Like '%${username}%'
+            </where>
+        </if>
+        limit #{currentPage},#{pageSize}
+    </select>
+
+    <select id="getCount" resultType="java.lang.Integer">
+
+        <if test="username==null and username='' ">
+            select count(1) from t_repair_card
+        </if>
+        <if test="username!=null and username!='' ">
+            <where>
+                repair_people Like '%${username}%'
+            </where>
+        </if>
+    </select>
+
+    <insert id="add" parameterType="com.jc.entity.RepairCard">
+       insert into t_repair_card (repair_people,repair_Date,repair_reason) values (#{repairPeople},#{repairDate},#{repairReason})
+   </insert>
+
+
+    <sql id="all">
+        id,
+        repair_people,
+        repair_Date,
+        repair_reason
+    </sql>
+
+</mapper>

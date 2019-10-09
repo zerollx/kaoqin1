@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jc.mapper.EmployeeMapper">
+    <resultMap id="employeeMap" type="com.jc.entity.Employee">
+        <id property="id" column="id"/>
+        <result property="empCode" column="emp_code"/>
+        <result property="empName" column="emp_name"/>
+        <result property="empSex" column="emp_sex"/>
+        <result property="empAge" column="emp_age"/>
+        <result property="empNation" column="emp_nation"/>
+        <result property="empCard" column="emp_card"/>
+        <result property="empSalary" column="emp_salary"/>
+        <result property="empPhone" column="emp_phone"/>
+        <result property="empEmergencyContact" column="emp_emergency_contact"/>
+        <result property="empEmergencyPhone" column="emp_emergency_phone"/>
+        <result property="empDescribe" column="emp_describe"/>
+        <result property="empImg" column="emp_img"/>
+        <association property="station" javaType="com.jc.entity.Station">
+            <id property="id" column="id"/>
+            <result property="sCode" column="s_code"/>
+            <result property="sName" column="s_name"/>
+            <result property="sPart" column="s_part"/>
+            <result property="sSuper" column="s_super"/>
+            <result property="sType" column="s_type"/>
+            <result property="sDescribe" column="s_describe"/>
+            <result property="empPositionId" column="emp_position_id"/>
+        </association>
+
+    </resultMap>
+    <select id="findAll" resultMap="employeeMap">
+        select
+        t1.id,
+        t1.emp_code,
+        t1.emp_name,
+        t1.emp_sex,
+        t1.emp_age,
+        t1.emp_nation,
+        t2.s_name,
+        t1.emp_salary
+        from t_employee t1,t_station t2
+        <where>
+            <foreach collection="ids" item="id" open="t1.id in(" close=")" separator=",">
+                #{id}
+            </foreach>
+            AND t1.emp_position_id = t2.emp_position_id
+            AND emp_name Like '%${username}%'
+        </where>
+        limit #{currentPage},#{pageSize}
+    </select>
+
+    <select id="findIds" resultType="java.lang.Integer">
+         select  id from t_employee
+    </select>
+
+
+    <select id="getCount" resultType="java.lang.Integer">
+        <if test="username==null and username=''">
+            select count(1) from t_employee
+        </if>
+
+        <if test="username!=null and username!='' ">
+            <where>
+                emp_name Like '%${username}%'
+            </where>
+        </if>
+    </select>
+
+    <select id="listByIdAll" resultMap="employeeMap">
+        select
+          t1.emp_name,
+          t1.emp_sex,
+          t1.emp_age,
+          t1.emp_nation,
+          t1.emp_card,
+          t1.emp_phone,
+          t1.emp_salary,
+          t1.emp_emergency_contact,
+          t1.emp_emergency_phone,
+          t1.emp_img,
+          t2.s_name,
+          t1.emp_describe
+        from t_employee t1,t_station t2
+        where t1.emp_position_id = t2.emp_position_id
+        and t1.id=#{id}
+    </select>
+
+    <!--修改根据ID查询-->
+    <select id="findById" resultMap="employeeMap">
+        select
+          t1.id,
+          t1.emp_name,
+          t1.emp_sex,
+          t1.emp_age,
+          t1.emp_nation,
+          t1.emp_card,
+          t1.emp_phone,
+          t1.emp_salary,
+          t1.emp_emergency_contact,
+          t1.emp_emergency_phone,
+          t2.s_name,
+          t1.emp_describe
+        from t_employee t1,t_station t2
+        where t1.emp_position_id = t2.emp_position_id
+        and t1.id=#{id}
+    </select>
+
+
+    <insert id="employeeAdd" parameterType="com.jc.entity.Employee">
+        insert into t_employee (emp_code,emp_name,emp_sex,emp_age,emp_nation,emp_card,emp_salary,emp_phone,emp_emergency_contact,emp_emergency_phone,emp_position_id,emp_describe,emp_img)
+        values (#{empCode},#{empName},#{empSex},#{empAge},#{empNation},#{empCard},#{empSalary},#{empPhone},#{empEmergencyContact},#{empEmergencyPhone},#{empPositionId},#{empDescribe},#{empImg})
+    </insert>
+
+    <delete id="employeeDelete" parameterType="java.lang.Integer">
+        delete from t_employee where id=#{id}
+    </delete>
+
+    <delete id="deleteAll" parameterType="java.lang.Integer">
+        delete from t_employee
+        <where>
+            <foreach collection="array" item="id" open="id in(" close=")" separator=",">
+                #{id}
+            </foreach>
+        </where>
+    </delete>
+
+    <update id="update" parameterType="com.jc.entity.Employee">
+        update t_employee set  emp_name=#{empName},emp_sex=#{empSex},emp_age=#{empAge},emp_nation=#{empNation},emp_card=#{empCard},emp_salary=#{empSalary},emp_phone=#{empPhone},emp_emergency_contact=#{empEmergencyContact},emp_emergency_phone=#{empEmergencyPhone},emp_position_id=#{empPositionId},emp_describe=#{empDescribe}  where id=#{id}
+    </update>
+
+    <select id="allName"  resultType="java.lang.String">
+        select   emp_name from  t_employee
+    </select>
+</mapper>

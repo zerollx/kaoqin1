@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jc.mapper.StationMapper" >
+
+    <resultMap id="stationMap" type="com.jc.entity.Station">
+        <id column="id" property="id" />
+        <result property="sCode" column="s_code"/>
+        <result property="sName" column="s_name"/>
+        <result property="sPart" column="s_part"/>
+        <result property="sSuper" column="s_super"/>
+        <result property="sType" column="s_type"/>
+        <result property="sDescribe" column="s_describe"/>
+        <result property="empPositionId" column="emp_position_id"/>
+    </resultMap>
+
+    <select id="findAllStation" resultType="java.lang.String">
+        select s_name from t_station
+</select>
+
+    <select id="listAll"  resultMap="stationMap">
+         select <include refid="all"/> from t_station
+        <if test="username!=null and username!='' ">
+            <where>
+                s_name Like '%${username}%'
+            </where>
+        </if>
+        limit  #{currentPage},#{pageSize}
+    </select>
+
+
+    <select id="getCount" resultType="java.lang.Integer">
+        <if test="username==null and username=''">
+            select count(1) from t_station
+        </if>
+
+        <if test="username!=null and username!='' ">
+            <where>
+                s_name Like '%${username}%'
+            </where>
+        </if>
+    </select>
+
+   <sql id="all">
+      id,
+      s_code,
+      s_name,
+      s_part,
+      s_super,
+      s_type,
+      s_describe,
+      emp_position_id
+   </sql>
+
+    <select id="findAll" resultMap="stationMap">
+        select <include refid="all" /> from t_station
+    </select>
+
+    <!--<select id="findAllPositionId"  resultType="java.lang.String">-->
+         <!--select emp_position_id from t_station-->
+    <!--</select>-->
+
+    <insert id="add" parameterType="com.jc.entity.Station">
+        insert  into t_station (s_code,s_name,s_part,s_super,s_type,s_describe,emp_position_id)
+        values (#{sCode},#{sName},#{sPart},#{sSuper},#{sType},#{sDescribe},#{empPositionId})
+    </insert>
+
+    <delete id="delete"  parameterType="java.lang.Integer">
+        delete  from t_station where id=#{id}
+    </delete>
+
+    <update id="update"  parameterType="com.jc.entity.Station">
+       update t_station set  s_code=#{sCode},s_name=#{sName},s_part=#{sPart},s_super=#{sSuper},s_type=#{sType},s_describe=#{sDescribe} where id =#{id}
+    </update>
+    <select id="findById" resultMap="stationMap">
+        select <include refid="all"/> from t_station where  id=#{id}
+    </select>
+
+</mapper>

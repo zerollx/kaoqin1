@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jc.mapper.CheckReportMapper">
+    <resultMap id="CheckMap" type="com.jc.entity.CheckReport">
+        <id column="id" property="id"/>
+        <result property="name" column="name"/>
+        <result property="morning" column="time"/>
+        <result property="afternoon" column="afternoon"/>
+        <result property="situation" column="situation"/>
+    </resultMap>
+
+    <select id="listAll" resultMap="CheckMap">
+        select
+        <include refid="all"/>
+        from t_check_report
+        <if test="username!=null and username!='' ">
+            <where>
+                name Like '%${username}%'
+            </where>
+        </if>
+        limit #{currentPage},#{pageSize}
+    </select>
+
+    <select id="getCount" resultType="java.lang.Integer">
+
+        <if test="username==null and username='' ">
+            select count(1) from t_check_report
+        </if>
+        <if test="username!=null and username!='' ">
+            <where>
+                name Like '%${username}%'
+            </where>
+        </if>
+    </select>
+
+    <insert id="mAdd" parameterType="com.jc.entity.CheckReport">
+       insert into t_check_report (name,time,situation,type) values (#{name},#{morning},#{situation},#{type})
+   </insert>
+
+    <sql id="all">
+        id,
+        name,
+        time,
+        situation,
+        Type
+    </sql>
+
+</mapper>

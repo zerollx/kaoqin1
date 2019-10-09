@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jc.mapper.PunchMapper">
+    <resultMap id="punchMap" type="com.jc.entity.PunchCard">
+        <id column="id" property="id"/>
+        <result property="punchPeople" column="punch_people"/>
+        <result property="punchDate" column="punch_date"/>
+        <result property="punchRemarks" column="punch_remarks"/>
+    </resultMap>
+
+    <select id="listAll" resultMap="punchMap">
+        select
+        <include refid="all"/>
+        from t_punch_card
+        <if test="username!=null and username!='' ">
+            <where>
+                punch_people Like '%${username}%'
+            </where>
+        </if>
+        limit #{currentPage},#{pageSize}
+    </select>
+
+    <select id="getCount" resultType="java.lang.Integer">
+
+        <if test="username==null and username='' ">
+            select count(1) from t_punch_card
+        </if>
+        <if test="username!=null and username!='' ">
+            <where>
+                punch_people Like '%${username}%'
+            </where>
+        </if>
+    </select>
+
+    <insert id="add" parameterType="com.jc.entity.PunchCard">
+       insert into t_punch_card (punch_people,punch_date,punch_remarks) values (#{punchPeople},#{punchDate},#{punchRemarks})
+   </insert>
+
+    <sql id="all">
+        id,
+        punch_people,
+        punch_date,
+        punch_remarks
+    </sql>
+
+</mapper>

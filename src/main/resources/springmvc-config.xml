@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd"
+>
+    <task:annotation-driven/>
+    <!-- 扫描任务 -->
+
+    <!-- 配置映射器-->
+    <!-- 把映射器直接交给spring去管理就行了, spring可以识别 所以不需要进行一些属性的配置-->
+    <bean class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping"/>
+    <bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter"/>
+
+
+    <!--<bean name="/hello" class="cn.jc.controller.HelloController"/>-->
+
+    <!-- 配置视图解析器 -->
+    <!-- InternalResourceViewResolver：支持JSP视图解析 -->
+    <!-- viewClass：JstlView表示JSP模板页面需要使用JSTL标签库，所以classpath中必须包含jstl的相关jar包； -->
+    <!-- prefix 和suffix：查找视图页面的前缀和后缀，最终视图的址为： -->
+    <!-- 前缀+逻辑视图名+后缀，逻辑视图名需要在controller中返回ModelAndView指定，比如逻辑视图名为hello，-->
+    <!-- 则最终返回的jsp视图地址 "WEB-INF/view/hello.jsp" -->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+        <!--<property name="prefix" value="/WEB-INF/JSP/"/>-->
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+    <!-- 注解扫描!!!-->
+    <context:component-scan base-package="com.jc.controller"/>
+    <!-- 需要注解的驱动 -->
+    <!-- springmvc使用<mvc:annotation-driven/>
+     自动加载RequestMappingHandlerMapping和RequestMappingHandlerAdapter
+     可以用使用<mvc:annotation-driven/>替代注解处理器和适配器的配置
+-->
+    <mvc:annotation-driven/>
+
+    <!--  -->
+    <!-- 映射静态资源 方案1 -->
+    <mvc:default-servlet-handler/>
+
+    <!-- 映射静态资源 方案2 -->
+    <!--<mvc:resources location="/js/" mapping="/js/**"/>-->
+    <!--<mvc:resources location="/css/" mapping="/css/**"/>-->
+    <!--<mvc:resources location="/fonts/" mapping="/fonts/**"/>-->
+    <!--<mvc:resources location="/plugin/" mapping="/plugin/**"/>-->
+    <!-- 关于springmvc文件上传的配置-->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <!--允许上传的文件最大大小  单位是byte-->
+        <property name="maxUploadSize" value="60000000"/>
+    </bean>
+    <!--配置拦截器-->
+    <!--拦截器-->
+    <!--<mvc:interceptors>-->
+        <!--&lt;!&ndash; 匹配的是url路径， 如果不配置或/**,将拦截所有的Controller &ndash;&gt;-->
+        <!--<mvc:interceptor>-->
+            <!--&lt;!&ndash;拦截所有&ndash;&gt;-->
+            <!--<mvc:mapping path="/**"/>-->
+            <!--&lt;!&ndash;不拦截登录&ndash;&gt;-->
+            <!--<mvc:exclude-mapping path="/login"/>-->
+            <!--<mvc:exclude-mapping path="/css/**"/>-->
+            <!--<mvc:exclude-mapping path="/js/**"/>-->
+            <!--<mvc:exclude-mapping path="/fonts/**"/>-->
+            <!--<mvc:exclude-mapping path="/plugin/**"/>-->
+            <!--&lt;!&ndash; 自定义的拦截器的那个类在哪里&ndash;&gt;-->
+            <!--<bean class="cn.jc.interceptor.AuthHandlerInterceptor"/>-->
+        <!--</mvc:interceptor>-->
+    <!--</mvc:interceptors>-->
+    <!--开启mvc注解驱动  -->
+    <mvc:annotation-driven validator="validator" />
+
+    <!-- 注册hibernate的校验器 -->
+    <bean id = "validator" class = "org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
+        <property name="providerClass" value ="org.hibernate.validator.HibernateValidator"></property>
+    </bean>
+
+</beans>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jc.mapper.CheckAllMapper">
+    <resultMap id="CheckMap" type="com.jc.entity.CheckAll">
+        <id column="id" property="id"/>
+        <result property="name" column="name"/>
+        <result property="morning" column="morning"/>
+        <result property="afternoon" column="afternoon"/>
+        <result property="situation" column="situation"/>
+    </resultMap>
+
+    <select id="listAll" resultMap="CheckMap">
+        select
+        <include refid="all"/>
+        from t_cheak_all
+        <if test="username!=null and username!='' ">
+            <where>
+                name Like '%${username}%'
+            </where>
+        </if>
+        limit #{currentPage},#{pageSize}
+    </select>
+
+    <select id="getCount" resultType="java.lang.Integer">
+
+        <if test="username==null and username='' ">
+            select count(1) from t_cheak_all
+        </if>
+        <if test="username!=null and username!='' ">
+            <where>
+                name Like '%${username}%'
+            </where>
+        </if>
+    </select>
+
+    <insert id="checkAdd" parameterType="com.jc.entity.CheckReport">
+       insert into t_cheak_all (name,morning,afternoon,situation) values (#{name},#{morning},#{morning},#{situation})
+   </insert>
+
+    <sql id="all">
+        id,
+        name,
+        morning,
+        afternoon,
+        situation
+    </sql>
+
+
+</mapper>

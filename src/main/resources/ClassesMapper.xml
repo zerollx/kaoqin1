@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jc.mapper.ClassesMapper">
+    <resultMap id="classesMap" type="com.jc.entity.Classes">
+        <id column="id" property="id"/>
+        <result property="cCode" column="c_code"/>
+        <result property="cName" column="c_name"/>
+        <result property="cMorning" column="c_morning"/>
+        <result property="cAfternoon" column="c_afternoon"/>
+    </resultMap>
+
+    <select id="findAll" resultMap="classesMap">
+        select
+        <include refid="all"/>
+        from t_classes
+        <if test="username!=null and username!='' ">
+            <where>
+                c_name Like '%${username}%'
+            </where>
+        </if>
+        limit #{currentPage},#{pageSize}
+    </select>
+
+    <select id="getCount" resultType="java.lang.Integer">
+
+        <if test="username==null and username='' ">
+            select count(1) from t_classes
+        </if>
+        <if test="username!=null and username!='' ">
+            <where>
+                c_name Like '%${username}%'
+            </where>
+        </if>
+    </select>
+
+    <insert id="Add" parameterType="com.jc.entity.Classes">
+        insert into t_classes(c_code,c_name,c_morning,c_afternoon) values (#{cCode},#{cName},#{cMorning},#{cAfternoon})
+    </insert>
+
+    <sql id="all">
+        id,
+        c_code,
+        c_name,
+        c_morning,
+        c_afternoon
+    </sql>
+
+    <delete id="delete" parameterType="java.lang.Integer">
+        delete from t_classes where  id=#{id}
+    </delete>
+
+    <select id="findById" resultMap="classesMap">
+        select <include refid="all"/> from  t_classes where id=#{id}
+    </select>
+    <update id="update" parameterType="com.jc.entity.Classes">
+        update t_classes  set  c_code=#{cCode},c_name=#{cName},c_morning=#{cMorning},c_afternoon=#{cAfternoon} where   id=#{id}
+    </update>
+    
+    <delete id="deleteAll" parameterType="java.lang.Integer">
+        delete  from t_classes
+        <where>
+        <foreach collection="array" item="id" open="id in (" close=")" separator=",">
+            #{id}
+        </foreach>
+        </where>
+    </delete>
+</mapper>

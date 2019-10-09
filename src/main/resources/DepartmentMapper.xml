@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jc.mapper.DepartmentMapper">
+    <resultMap id="departMap" type="com.jc.entity.Department">
+        <id column="id" property="id"/>
+        <result property="departCode" column="d_code"/>
+        <result property="departName" column="d_name"/>
+        <result property="departLeading" column="d_leading"/>
+        <result property="departDuty" column="d_duty"/>
+        <result property="departSuperDepart" column="d_super_depart"/>
+    </resultMap>
+
+    <select id="listAll" resultMap="departMap">
+        select
+        <include refid="all"/>
+        from t_department
+        <if test="username!=null and username!='' ">
+            <where>
+                d_name Like '%${username}%'
+            </where>
+        </if>
+        limit #{currentPage},#{pageSize}
+    </select>
+
+    <select id="getCount" resultType="java.lang.Integer">
+        <if test="username==null and username=''">
+            select count(1) from t_department
+        </if>
+
+        <if test="username!=null and username!='' ">
+            <where>
+                d_name Like '%${username}%'
+            </where>
+        </if>
+    </select>
+
+
+    <insert id="add" parameterType="com.jc.entity.Department">
+        insert  into  t_department (d_code,d_name,d_leading,d_duty,d_super_depart) values (#{departCode} ,#{departName} ,#{departLeading} ,#{departDuty} ,#{departSuperDepart}                                               )
+    </insert>
+
+
+    <delete id="delete" parameterType="java.lang.Integer">
+        delete from t_department where  id=#{id}
+    </delete>
+
+    <delete id="deleteAll" parameterType="java.lang.Integer">
+
+        delete from t_department
+        <where>
+            <foreach collection="array" item="id" open="id in (" close=")" separator=",">
+                #{id}
+            </foreach>
+        </where>
+    </delete>
+
+
+    <sql id="all">
+        id,
+        d_code,
+        d_name,
+        d_leading,
+        d_duty,
+        d_super_depart
+    </sql>
+
+    <select id="findById" resultMap="departMap">
+        select
+        <include refid="all"/>
+        from t_department where id=#{id}
+    </select>
+
+
+    <update id="update" parameterType="com.jc.entity.Department">
+           update t_department set  d_code=#{departCode},d_name=#{departName},d_leading=#{departLeading},d_duty=#{departDuty},d_super_depart=#{departSuperDepart} where id =#{id}
+
+     </update>
+
+    <select id="findAll" resultMap="departMap">
+        select
+        <include refid="all"/>
+        from t_department
+    </select>
+
+</mapper>
